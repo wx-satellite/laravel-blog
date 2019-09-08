@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>@yield("title","Wx-Blog")</title>
+    <title>@yield('title', 'Wx-Blog') - Laravel 入门教程</title>
+    <link rel="stylesheet" href="{{mix('css/app.css')}}">
 </head>
 <body>
-@yield("content")
+
+@include("layouts._header")
+
+<div class="container">
+    @yield('content')
+    @include("layouts._footer")
+</div>
 </body>
 </html>
