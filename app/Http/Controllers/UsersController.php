@@ -22,7 +22,7 @@ class UsersController extends Controller
             "name" => "required|max:50",
             "email" => "required|email|unique:users|max:255",
             // confirmed验证两次密码是否一致，表单的确认密码字段必须是"password_confirmation"
-            "password" => "required|confirmed"
+            "password" => "required|confirmed|min:6"
         ]);
         return ;
     }
