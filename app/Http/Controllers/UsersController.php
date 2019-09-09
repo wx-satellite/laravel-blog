@@ -25,6 +25,9 @@ class UsersController extends Controller
 
 
     // "{{}}"转义输出，"{!! !!}"原生输出
+    // 数据库内容自动填充：UserTableSeeder
+    // 局部视图：@include("user._user")继承了当前行的作用域，因此在_user.blade.php文件中可以访问$user变量
+    // @can 在模板中使用授权策略
     public function index($pageSize=10) {
         $users = User::query()->paginate($pageSize);
         return view("users.index",compact("users"));
@@ -91,5 +94,15 @@ class UsersController extends Controller
 
         // 或者： route("users.show",$user)
         return redirect()->route("users.show",[$user]);
+    }
+
+
+    // 授权策略
+    public function destroy(User $user) {
+        $this->authorize("destroy", $user);
+        $user->delete();
+        session()->flash("success","删除用户成功！");
+        return redirect()->back();
+
     }
 }
