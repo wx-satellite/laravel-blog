@@ -38,7 +38,9 @@ class SessionsController extends Controller
     // 遵循restful风格的api，将数据看作是资源，用uri来定位资源。使用get，post，patch，delete来对资源进行增删改查
     // 由于浏览器不支持delete，patch请求，在laravel中可以使用隐藏域来伪造delete请求："method_field('DELETE')"
     public function destroy() {
-
+        Auth::logout();
+        session()->falsh("success","您已成功退出！");
+        return redirect()->route("login");
     }
 
 }
