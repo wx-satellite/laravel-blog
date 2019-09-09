@@ -33,6 +33,12 @@ class SessionsController extends Controller
             // 表单数据验证错误会自动将表单闪存，但是以下方式不会，因此需要调用withInput()方法，old函数才能获取到上一次提交的表单数据
             return redirect()->back()->withInput();
         }
-        return;
     }
+
+    // 遵循restful风格的api，将数据看作是资源，用uri来定位资源。使用get，post，patch，delete来对资源进行增删改查
+    // 由于浏览器不支持delete，patch请求，在laravel中可以使用隐藏域来伪造delete请求："method_field('DELETE')"
+    public function destroy() {
+
+    }
+
 }
