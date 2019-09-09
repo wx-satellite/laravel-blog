@@ -13,7 +13,7 @@ class UsersController extends Controller
     {
         // 如果用户未登陆访问update，edit默认会被重定向到"/login"页面，可以在Authenticate中间件中修改
         $this->middleware("auth",[
-            "except" => ["show", "create", "store"]
+            "except" => ["show", "create", "store","index"]
         ]);
 
 
