@@ -23,6 +23,14 @@ class UsersController extends Controller
         ]);
     }
 
+
+    // "{{}}"转义输出，"{!! !!}"原生输出
+    public function index($pageSize=10) {
+        $users = User::query()->paginate($pageSize);
+        return view("users.index",compact("users"));
+    }
+
+
     public function create() {
         return view("users.create");
     }
