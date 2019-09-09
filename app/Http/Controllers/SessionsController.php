@@ -24,8 +24,8 @@ class SessionsController extends Controller
         // attempt第一个参数是一个数组，会根据数组的第一个键值，本案例即email查找到用户，
         // 再根据传入的"password"值进行哈希加密，然后与数据库中 password 字段中已加密的密码进行匹配
         // 不相等或者用户不存在都返回false
-        if(Auth::attempt($info)) { // 数组的键必须有一个是password，并且数组的第一个键值用于查询数据库，因此第一个键值必须是唯一可以定位到用户的
-
+        if(Auth::attempt($info, $request->has("remember"))) { // 数组的键必须有一个是password，并且数组的第一个键值用于查询数据库，因此第一个键值必须是唯一可以定位到用户的
+            // 记住我，默认的登陆状态被保持2小时，"记住我"登陆状态保持5年
             session()->flash("success","欢迎回来！");
             return redirect()->route("users.show",[Auth::user()]);
         } else {
@@ -37,9 +37,9 @@ class SessionsController extends Controller
 
     // 遵循restful风格的api，将数据看作是资源，用uri来定位资源。使用get，post，patch，delete来对资源进行增删改查
     // 由于浏览器不支持delete，patch请求，在laravel中可以使用隐藏域来伪造delete请求："method_field('DELETE')"
-    public function destroy() {
+    public function destory() {
         Auth::logout();
-        session()->falsh("success","您已成功退出！");
+        session()->flash("success","您已成功退出！");
         return redirect()->route("login");
     }
 
