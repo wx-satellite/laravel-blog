@@ -8,6 +8,13 @@ use Illuminate\Support\Facades\Auth;
 class SessionsController extends Controller
 {
 
+    public function __construct()
+    {
+        // 未登陆的用户才能访问，登陆用户默认跳转到"/home"，可以在RedirectAuthenticated中间件中修改
+        $this->middleware("guest",[
+            "only" => ["create"]
+        ]);
+    }
 
     public function create() {
         return view("sessions.create");
@@ -27,7 +34,10 @@ class SessionsController extends Controller
         if(Auth::attempt($info, $request->has("remember"))) { // 数组的键必须有一个是password，并且数组的第一个键值用于查询数据库，因此第一个键值必须是唯一可以定位到用户的
             // 记住我，默认的登陆状态被保持2小时，"记住我"登陆状态保持5年
             session()->flash("success","欢迎回来！");
-            return redirect()->route("users.show",[Auth::user()]);
+
+            $defaultUrl = route("users.show", Auth::user());
+            //intended将页面重定向到上次请求访问的页面，如果上次请求访问的页面为空则跳转到defaultUrl页面
+            return redirect()->intended($defaultUrl);
         } else {
             session()->flash("danger","很抱歉，您的邮箱和密码不匹配");
             // 表单数据验证错误会自动将表单闪存，但是以下方式不会，因此需要调用withInput()方法，old函数才能获取到上一次提交的表单数据

@@ -9,6 +9,20 @@ use Illuminate\Support\Facades\Auth;
 class UsersController extends Controller
 {
 
+    public function __construct()
+    {
+        // 如果用户未登陆访问update，edit默认会被重定向到"/login"页面，可以在Authenticate中间件中修改
+        $this->middleware("auth",[
+            "except" => ["show", "create", "store"]
+        ]);
+
+
+        // 未登录的用户才能访问create
+        $this->middleware("guest",[
+            "only" => ["create"]
+        ]);
+    }
+
     public function create() {
         return view("users.create");
     }
@@ -46,10 +60,12 @@ class UsersController extends Controller
     }
 
     public function edit(User $user) {
+        $this->authorize("update", $user);
         return view("users.edit",compact('user'));
     }
 
     public function update(User $user,Request $request) {
+        $this->authorize("update", $user);
         $this->validate($request, [
             "name" => "required|max:255",
             "password" => "nullable|min:6|confirmed" // 当用户提供空白密码时也会通过验证
