@@ -6,6 +6,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
+
+/* 用户密码重置
+ *  用户点击重设密码链接并跳转到重设密码页面；
+    在重设密码页面输入邮箱信息并提交；
+    控制器通过该邮箱查找到指定用户并为该用户生成一个密码令牌，接着将该令牌以链接的形式发送到用户提交的邮箱上；
+    用户查看自己个人邮箱，点击重置密码链接跳转到重置密码页面；
+    用户在该页面输入自己的邮箱和密码并提交；
+    控制器对用户的邮箱和密码重置令牌进行匹配，匹配成功则更新用户密码；
+ */
 class UsersController extends Controller
 {
 
@@ -117,6 +127,7 @@ class UsersController extends Controller
 
 
     // 激活
+    // 邮件通知：25端口对应tls，465端口对应ssl加密
     public function confirmEmail($token) {
 
         // 找不到就返回404响应，类似findOrFail
