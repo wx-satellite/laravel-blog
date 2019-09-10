@@ -44,6 +44,10 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+    public function feeds() {
+        return $this->statuses()->orderBy("created_at", "desc");
+    }
+
     public function headImage($size = 100) {
         $hash = md5(strtolower($this->attributes["email"]));
         return "http://www.gravatar.com/avatar/$hash?s=$size";

@@ -20,6 +20,8 @@ class StatusesController extends Controller
             "content" => "required|max:140"
         ]);
 
+
+        // 通过模型关联创建微博不需要指定user_id，会自动和用户进行关联
         Auth::user()->statuses()->create([
             "content" => $data["content"]
         ]);
