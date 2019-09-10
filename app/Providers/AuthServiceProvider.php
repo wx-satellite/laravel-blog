@@ -11,8 +11,12 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @var array
      */
+
+
+    // 手动注册"授权策略"，laravel5.8之后支持自动注册
     protected $policies = [
          'App\Models\User' => 'App\Policies\UserPolicy',
+        "App\Models\Status" => "App\Policies\StatusPolicy"
     ];
 
     /**

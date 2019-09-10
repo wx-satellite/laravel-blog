@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Status;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -28,5 +29,14 @@ class StatusesController extends Controller
 
         session()->flash("success","发布成功！");
         return back();
+    }
+
+
+    public function destroy(Status $status) {
+        // 没有权限时报403
+        $this->authorize("destroy", $status);
+        $status->delete();
+        session()->flash("success","删除成功！");
+        return redirect()->back();
     }
 }
