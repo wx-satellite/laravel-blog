@@ -13,7 +13,7 @@ class UsersController extends Controller
     {
         // 如果用户未登陆访问update，edit默认会被重定向到"/login"页面，可以在Authenticate中间件中修改
         $this->middleware("auth",[
-            "except" => ["show", "create", "store","index"]
+            "except" => ["show", "create", "store","index","confirmEmail"]
         ]);
 
 
@@ -40,6 +40,8 @@ class UsersController extends Controller
 
 
     // 利用了laravel的"隐性路由模型绑定"，直接读取对应id的模型$user，找不到则报404
+    // "隐性路由模型绑定"有一个约定优于配置的注意点：一般路由片段是模型的小写，例如{user}，并且方法的参数也是$user。
+    // 实际上经过测试：只要路由片段和变量名保持一致就好了，例如:{a}对应的变量"User $a"
     public function show(User $user) {
         // compact("user") 等价于 ["user"=>$user]
         return view("users.show", compact('user'));
@@ -63,11 +65,18 @@ class UsersController extends Controller
         ]);
 
         // 注册用户自动登陆
-        Auth::login($user);
+//        Auth::login($user);
+//        session()->flash("success","欢迎，您将在这里开启一段新的旅程~");
+//        // 等效于 redirect()->route("users.show",[$user->id])，下述写法是"约定优于配置"的一种写法，route方法会自动获取模型的id主键
+//        return redirect()->route("users.show",[$user]);
 
-        session()->flash("success","欢迎，您将在这里开启一段新的旅程~");
-        // 等效于 redirect()->route("users.show",[$user->id])，下述写法是"约定优于配置"的一种写法，route方法会自动获取模型的id主键
-        return redirect()->route("users.show",[$user]);
+
+        $user->sendEmailConfirmationTo($user);
+        session()->flash("success","注册成功，注意查收激活邮件");
+        return redirect("/");
+
+
+
     }
 
     public function edit(User $user) {
@@ -103,6 +112,27 @@ class UsersController extends Controller
         $user->delete();
         session()->flash("success","删除用户成功！");
         return redirect()->back();
+
+    }
+
+
+    // 激活
+    public function confirmEmail($token) {
+
+        // 找不到就返回404响应，类似findOrFail
+        $user = User::query()->where("activation_token", $token)->firstOrFail();
+
+
+        $user->activated = true;
+        $user->activation_token = null; // 激活标志置为null，防止用户多次操作
+        $user->save();
+
+        // 自动登陆
+        Auth::login($user);
+
+
+        session()->flash("success","恭喜你，激活成功！");
+        return redirect()->route("users.show",[$user]);
 
     }
 }
