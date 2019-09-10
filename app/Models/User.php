@@ -59,12 +59,11 @@ class User extends Authenticatable
     public function sendEmailConfirmationTo($user) {
         $view = "emails.confirm";
         $data = compact("user");
-        $from = "15658283276@163.com";
         $to = $user->email;
         $name = "三斤和他的猫";
         $subject = "测试邮件";
-        Mail::send($view,$data,function($message)use($from,$to,$name,$subject){
-            $message->from($from,$name)->to($to)->subject($subject);
+        Mail::send($view,$data,function($message)use($to,$name,$subject){
+            $message->to($to)->subject($subject);
         });
     }
 }
