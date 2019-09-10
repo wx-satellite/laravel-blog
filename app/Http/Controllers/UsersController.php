@@ -52,9 +52,13 @@ class UsersController extends Controller
     // 利用了laravel的"隐性路由模型绑定"，直接读取对应id的模型$user，找不到则报404
     // "隐性路由模型绑定"有一个约定优于配置的注意点：一般路由片段是模型的小写，例如{user}，并且方法的参数也是$user。
     // 实际上经过测试：只要路由片段和变量名保持一致就好了，例如:{a}对应的变量"User $a"
-    public function show(User $user) {
-        // compact("user") 等价于 ["user"=>$user]
-        return view("users.show", compact('user'));
+    public function show(User $user, $pageSize=15) {
+
+        $statuses = $user->statuses()->orderBy("created_at","desc")->paginate($pageSize);
+
+        // compact("user","statuses") 等价于 ["user"=>$user,"statuses"=>$statuses]
+        // 关于Carbon的使用"$status->created_at->diffForHumans()"
+        return view("users.show", compact('user',"statuses"));
     }
 
     public function store(Request $request) {
