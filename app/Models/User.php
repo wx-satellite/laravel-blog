@@ -45,9 +45,20 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }
 
+
+    // 关联方法：
+    // $user->feeds()返回的是数据库请求构造器
+    // $user->feeds 返回的是模型的集合
+    // $user->feeds == $user->feeds()->get()
     public function feeds()
     {
-        return $this->statuses()->orderBy("created_at", "desc");
+        $user_ids = $this->followings->pluck("id")->toArray();
+        array_push($user_ids, $this->id);
+        return Status::query()
+            ->whereIn("user_id", $user_ids)
+            // with预加载可以避免N+1的问题：https://learnku.com/docs/laravel/5.8/eloquent-relationships/3932#eager-loading
+            ->with("user")
+            ->orderBy("created_at", "desc");
     }
 
     public function headImage($size = 100)
