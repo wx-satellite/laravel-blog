@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Auth;
     用户在该页面输入自己的邮箱和密码并提交；
     控制器对用户的邮箱和密码重置令牌进行匹配，匹配成功则更新用户密码；
  */
+
+/*
+ * 关于数据统计：本案例直接使用count对数据统计但是在大型系统中为了节省服务器资源和提高数据库查询效率会选择冗余一个计数字段，每次对模型
+ * 增加删除都更新这个字段
+ */
 class UsersController extends Controller
 {
 
@@ -149,5 +154,18 @@ class UsersController extends Controller
         session()->flash("success","恭喜你，激活成功！");
         return redirect()->route("users.show",[$user]);
 
+    }
+
+
+    public function followings(User $user, $pageSize=15) {
+        $users = $user->followings()->paginate($pageSize);
+        $title = $user->name."关注的人";
+        return view("users.follow",compact("users","title"));
+    }
+
+    public function followers(User $user, $pageSize=15) {
+        $users = $user->followers()->paginate($pageSize);
+        $title = $user->name."的粉丝";
+        return view("users.follow",compact("users","title"));
     }
 }
